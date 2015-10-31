@@ -1,6 +1,6 @@
 # build the hyperkube image.
 
-VERSION=v1.1.2
+VERSION=$(shell git rev-parse --short master)
 ARCH=amd64
 BASEIMAGE=debian:jessie
 
@@ -12,16 +12,10 @@ BASEIMAGE=debian:jessie
 all:
 	cp ../../saltbase/salt/helpers/safe_format_and_mount .
 	cp ../../saltbase/salt/generate-cert/make-ca-cert.sh  .
-	curl -O https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/linux/${ARCH}/hyperkube
+	cp ../../../_output/local/bin/linux/amd64/hyperkube .
 	sed -i "s/VERSION/${VERSION}/g" master-multi.json master.json
-        sed -i "s/ARCH/${ARCH}/g" master-multi.json master.json
+	sed -i "s/ARCH/${ARCH}/g" master-multi.json master.json
 	sed -i "s/BASEIMAGE/${BASEIMAGE}/g" Dockerfile
-	docker build -t gcr.io/google_containers/hyperkube-${ARCH}:${VERSION} .
-	gcloud docker push gcr.io/google_containers/hyperkube-${ARCH}:${VERSION}
-	# Backward compatability.  TODO: deprecate this image tag
-ifeq ($(ARCH),amd64)
-		docker tag gcr.io/google_containers/hyperkube-${ARCH}:${VERSION} gcr.io/google_containers/hyperkube:${VERSION}
-		gcloud docker push gcr.io/google_containers/hyperkube:${VERSION}
-endif
+	docker build -t 2opremio/hyperkube:${VERSION} .
 
 .PHONY: all

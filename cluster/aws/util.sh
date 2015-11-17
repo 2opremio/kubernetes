@@ -514,6 +514,7 @@ function upload-server-tars() {
     # We default to us-east-1 because that's the canonical region for S3,
     # and then the bucket is most-simply named (s3.amazonaws.com)
     aws s3 mb "s3://${AWS_S3_BUCKET}" --region ${AWS_S3_REGION}
+    sleep 5
 
     echo "Confirming bucket was created..."
 
@@ -1149,7 +1150,10 @@ function check-cluster() {
 }
 
 function kube-down {
-  local vpc_id=$(get_vpc_id)
+  local vpc_id=${VPC_ID}
+  if [[ "${vpc_id}" == "" ]]; then
+    vpc_id=$(get_vpc_id)
+  fi
   if [[ -n "${vpc_id}" ]]; then
     local elb_ids=$(get_elbs_in_vpc ${vpc_id})
     if [[ -n "${elb_ids}" ]]; then

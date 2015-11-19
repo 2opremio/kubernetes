@@ -1150,6 +1150,7 @@ function check-cluster() {
 }
 
 function kube-down {
+  local vpc_id=$(get_vpc_id)
   if [[ -n "${vpc_id}" ]]; then
     local elb_ids=$(get_elbs_in_vpc ${vpc_id})
     if [[ -n "${elb_ids}" ]]; then

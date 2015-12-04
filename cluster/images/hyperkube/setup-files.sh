@@ -31,7 +31,7 @@ create_token() {
 echo "admin,admin,admin" > /data/basic_auth.csv
 
 # Create HTTPS certificates
-CERT_DIR=/data /make-ca-cert.sh $(hostname -i)
+CERT_GROUP=`id -g` CERT_DIR=/data /make-ca-cert.sh $(hostname -i)
 
 # Create known tokens for service accounts
 echo "$(create_token),admin,admin" >> /data/known_tokens.csv

@@ -102,9 +102,16 @@ LOGGING_DESTINATION="${KUBE_LOGGING_DESTINATION:-elasticsearch}" # options: elas
 ENABLE_CLUSTER_LOGGING="${KUBE_ENABLE_CLUSTER_LOGGING:-true}"
 ELASTICSEARCH_LOGGING_REPLICAS=1
 
+EXTRA_DOCKER_OPTS=""
 # Optional: Don't require https for registries in our local RFC1918 network
 if [[ ${KUBE_ENABLE_INSECURE_REGISTRY:-false} == "true" ]]; then
-  EXTRA_DOCKER_OPTS="--insecure-registry 10.0.0.0/8"
+  EXTRA_DOCKER_OPTS="$EXTRA_DOCKER_OPTS --insecure-registry 10.0.0.0/8"
+fi
+
+# Weaveworks: Optional: allow setting Docker logging level to avoid kubelet
+# spamming. Fixed in 1.2, see https://github.com/kubernetes/kubernetes/pull/15728
+if [[ ${KUBE_DOCKER_LOG_LEVEL:-info} != "info" ]]; then
+  EXTRA_DOCKER_OPTS="$EXTRA_DOCKER_OPTS --log-level=${KUBE_DOCKER_LOG_LEVEL}"
 fi
 
 # Optional: Install cluster DNS.
